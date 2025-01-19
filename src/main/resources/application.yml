@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: fiap-video-extractor
+  profiles:
+    active: ${ENVIRONMENT:local}
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 300MB
+      max-request-size: 300MB
+
+config:
+  aws:
+    access-key: localstack
+    secret-key: localstack

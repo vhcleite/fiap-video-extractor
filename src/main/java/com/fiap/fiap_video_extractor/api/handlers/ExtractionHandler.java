@@ -24,12 +24,17 @@ public class ExtractionHandler {
             @RequestParam("file") MultipartFile file,
             @RequestParam("email") String email
     ) {
-        System.out.println("userId: " + userId);
-        System.out.println("email: " + email);
-        System.out.println("file name: " + file.getOriginalFilename());
-        System.out.println("file size: " + file.getSize());
         var request = new ExtractionRequest(userId, email);
         var response = extractionUseCase.extractFile(request, file);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ExtractionInfo> create(
+            @RequestHeader("x-user-id") String userId,
+            @PathVariable("id") String id
+    ) {
+        var response = extractionUseCase.getExtractionIndo(userId, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -1,5 +1,6 @@
 package com.fiap.fiap_video_extractor.core.usecases;
 
+import com.fiap.fiap_video_extractor.adapters.gateways.ExtractionCommandGateway;
 import com.fiap.fiap_video_extractor.adapters.gateways.ExtractionInfoGateway;
 import com.fiap.fiap_video_extractor.adapters.gateways.FileStorageGateway;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionInfo;
@@ -19,15 +20,17 @@ import java.util.UUID;
 
 @Service
 public class ExtractionUseCase {
-
-    private final String BUCKET_NAME = "images-extractions";
-
     private final FileStorageGateway fileStorageGateway;
     private final ExtractionInfoGateway extractionInfoGateway;
+    private final ExtractionCommandGateway extractionCommandGateway;
 
-    public ExtractionUseCase(FileStorageGateway fileStorageGateway, ExtractionInfoGateway extractionInfoGateway) {
+    public ExtractionUseCase(
+            FileStorageGateway fileStorageGateway,
+            ExtractionInfoGateway extractionInfoGateway,
+            ExtractionCommandGateway extractionCommandGateway) {
         this.fileStorageGateway = fileStorageGateway;
         this.extractionInfoGateway = extractionInfoGateway;
+        this.extractionCommandGateway = extractionCommandGateway;
     }
 
     public ExtractionInfo extractFile(ExtractionRequest request, MultipartFile file) {
@@ -40,7 +43,7 @@ public class ExtractionUseCase {
 
             fileStorageGateway.uploadFile(objectKey, file);
             extractionInfoGateway.save(extractionInfo);
-            // send command to queue
+            extractionCommandGateway.sendExtractionInfo(extractionInfo);
 
             return extractionInfo;
         } catch (IOException | NoSuchAlgorithmException e) {

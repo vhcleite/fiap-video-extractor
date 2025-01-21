@@ -12,7 +12,7 @@ services:
         - AWS_CBOR_DISABLE=1
         - DOCKER_HOST=unix:///var/run/docker.sock
         - HOSTNAME=localstack
-        - SERVICES=s3,dynamodb
+        - SERVICES=s3,dynamodb,sqs
         - AWS_DEFAULT_REGION=us-east-1
 
     volumes:

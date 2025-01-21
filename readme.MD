@@ -12,12 +12,6 @@ docker-compose up -d
 aws --endpoint-url=http://localhost:4566 s3 mb s3://images-extractions
 ```
 
-## verificar se o bucket foi criado com sucesso
-
-```
-aws --endpoint-url=http://localhost:4566 s3 mb s3://images-extractions
-```
-
 ## Criar tabela no dynamodb
 
 ```
@@ -28,8 +22,9 @@ aws --endpoint-url=http://127.0.0.1:4566 dynamodb create-table \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 ```
 
-## Verificar que a tabela existe
+## Criar fila de comandos
 
 ```
-aws --endpoint-url=http://127.0.0.1:4566 dynamodb list-tables
+aws --endpoint-url=http://127.0.0.1:4566 sqs create-queue --queue-name extraction-info-queue
+
 ```

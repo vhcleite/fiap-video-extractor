@@ -1,6 +1,8 @@
 package com.fiap.fiap_video_extractor.external;
 
 import com.fiap.fiap_video_extractor.pkg.interfaces.ExtractionStorageDatasource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -13,6 +15,8 @@ import java.nio.file.StandardCopyOption;
 
 @Component
 public class AwsS3Datasource implements ExtractionStorageDatasource {
+
+    Logger logger = LoggerFactory.getLogger(AwsS3Datasource.class);
 
     private final String BUCKET_NAME = "images-extractions";
 
@@ -36,6 +40,7 @@ public class AwsS3Datasource implements ExtractionStorageDatasource {
                     .build();
 
             s3Client.putObject(putObjectRequest, tempFile);
+            logger.info("file {} sent to s3", tempFile.getFileName());
 
             Files.delete(tempFile); // Clean up the temporary file
         } catch (IOException e) {

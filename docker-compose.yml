@@ -8,14 +8,14 @@ services:
       - "4572:4572"    # S3 service port (legacy)
     environment:
       - DEBUG=1
-        - USE_SSL=0
-        - AWS_CBOR_DISABLE=1
-        - DOCKER_HOST=unix:///var/run/docker.sock
-        - HOSTNAME=localstack
-        - SERVICES=s3,dynamodb,sqs
-        - AWS_DEFAULT_REGION=us-east-1
-
+      - USE_SSL=0
+      - AWS_CBOR_DISABLE=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOSTNAME=localstack
+      - SERVICES=s3,dynamodb,sqs
+      - AWS_DEFAULT_REGION=us-east-1
+      - DATA_DIR=/var/lib/localstack  # Explicitly set the data directory
     volumes:
-      - "./localstack/data:/var/lib/localstack" # Persist data across container restarts
+      - "./localstack/data:/var/lib/localstack"  # Persist data across container restarts
 networks:
   fiap-network:

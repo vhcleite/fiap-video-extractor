@@ -12,4 +12,16 @@ public record ExtractionInfo(
         OffsetDateTime updatedAt,
         ExtractionInfoFile originalFile
 ) {
+    public ExtractionInfo withStatus(ExtractionStatus newStatus) {
+        return new ExtractionInfo(
+                id,
+                userId,
+                newStatus,
+                videoStoragePath,
+                extractedFilePath,
+                uploadAt,
+                OffsetDateTime.now(),
+                originalFile
+        );
+    }
 }

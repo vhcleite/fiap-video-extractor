@@ -1,5 +1,6 @@
 package com.fiap.fiap_video_extractor.adapters.gateways;
 
+import com.fiap.fiap_video_extractor.core.entities.ExtractionCommand;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionInfo;
 import com.fiap.fiap_video_extractor.pkg.interfaces.ExtractionCommandProducer;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,7 @@ public class ExtractionCommandGateway {
         this.producer = producer;
     }
 
-    public void sendExtractionInfo(ExtractionInfo extractionInfo) {
-        producer.sendExtractionInfo(extractionInfo);
+    public void sendExtractionCommand(ExtractionInfo extractionInfo) {
+        producer.sendExtractionInfo(new ExtractionCommand(extractionInfo.id(), extractionInfo.userId()));
     }
 }

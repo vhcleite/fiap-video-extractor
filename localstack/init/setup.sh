@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Starting services initialization..."
+echo "Starting aws services initialization..."
 
 # Create S3 bucket
 awslocal s3 mb s3://images-extractions

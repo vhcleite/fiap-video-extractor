@@ -3,7 +3,7 @@ package com.fiap.fiap_video_extractor.external;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiap.fiap_video_extractor.core.entities.ExtractionInfo;
+import com.fiap.fiap_video_extractor.core.entities.ExtractionCommand;
 import com.fiap.fiap_video_extractor.pkg.interfaces.ExtractionCommandProducer;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import org.slf4j.Logger;
@@ -29,15 +29,15 @@ public class ExtractionCommandSqsProducer implements ExtractionCommandProducer {
         this.sqsTemplate = sqsTemplate;
     }
 
-    public void sendExtractionInfo(ExtractionInfo extractionInfo) {
-        String messageBody = serializeExtractionInfo(extractionInfo);
+    public void sendExtractionInfo(ExtractionCommand extractionCommand) {
+        String messageBody = serializeExtractionInfo(extractionCommand);
         var result = sqsTemplate.send(sqsSendOptions -> sqsSendOptions.queue(queueName).payload(messageBody));
         logger.info("Message sent to SQS: {}", result.endpoint());
     }
 
-    private String serializeExtractionInfo(ExtractionInfo extractionInfo) {
+    private String serializeExtractionInfo(ExtractionCommand extractionCommand) {
         try {
-            return mapper.writeValueAsString(extractionInfo);
+            return mapper.writeValueAsString(extractionCommand);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error serializing ExtractionInfo", e);
         }

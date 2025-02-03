@@ -14,7 +14,7 @@ awslocal dynamodb create-table \
         AttributeName=user_id,KeyType=HASH \
         AttributeName=id,KeyType=RANGE \
     --provisioned-throughput \
-        ReadCapacityUnits=1,WriteCapacityUnits=1
+        ReadCapacityUnits=10,WriteCapacityUnits=1
 
 # Create SQS queue
 awslocal sqs create-queue --queue-name extraction-info-queue

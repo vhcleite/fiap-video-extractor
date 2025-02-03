@@ -6,13 +6,12 @@ import com.fiap.fiap_video_extractor.core.entities.ExtractionStatus;
 import com.fiap.fiap_video_extractor.pkg.interfaces.ExtractionInfoDatasource;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.*;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -68,6 +67,61 @@ public class ExtractionInfoDynamoDbDatasource implements ExtractionInfoDatasourc
 
         Map<String, AttributeValue> item = response.item();
 
+        return new ExtractionInfo(
+                item.get("id").s(),
+                item.get("user_id").s(),
+                ExtractionStatus.valueOf(item.get("status").s()),
+                item.get("video_storage_path").s(),
+                item.get("extracted_file_path").s(),
+                OffsetDateTime.parse(item.get("created_at").s()),
+                OffsetDateTime.parse(item.get("updated_at").s()),
+                new ExtractionInfoFile(
+                        item.get("original_file_name").s(),
+                        Long.parseLong(item.get("original_file_size_bytes").s()),
+                        item.get("original_file_hash").s()
+                )
+        );
+    }
+
+    @Override
+    public List<ExtractionInfo> getByUserId(String userId) {
+        List<ExtractionInfo> extractionInfos = new ArrayList<>();
+
+        Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
+        expressionAttributeValues.put(":userId", AttributeValue.builder().s(userId).build());
+
+        // Use a QueryRequest instead of ScanRequest
+        QueryRequest queryRequest = QueryRequest.builder()
+                .tableName(EXTRACTION_INFO)
+                .keyConditionExpression("user_id = :userId")
+                .expressionAttributeValues(expressionAttributeValues)
+                .build();
+
+        try {
+            QueryResponse queryResponse;
+            do {
+                queryResponse = dynamoDbClient.query(queryRequest);
+                List<Map<String, AttributeValue>> items = queryResponse.items();
+
+                for (Map<String, AttributeValue> item : items) {
+                    extractionInfos.add(mapToExtractionInfo(item));
+                }
+
+                // If there are more results, update the exclusiveStartKey for pagination
+                queryRequest = queryRequest.toBuilder()
+                        .exclusiveStartKey(queryResponse.lastEvaluatedKey())
+                        .build();
+            } while (queryResponse.lastEvaluatedKey() != null && !queryResponse.lastEvaluatedKey().isEmpty());
+
+        } catch (DynamoDbException e) {
+            System.err.println("Error querying table: " + e.getMessage());
+            throw new RuntimeException("Error retrieving extraction info for userId: " + userId, e);
+        }
+
+        return extractionInfos;
+    }
+
+    private ExtractionInfo mapToExtractionInfo(Map<String, AttributeValue> item) {
         return new ExtractionInfo(
                 item.get("id").s(),
                 item.get("user_id").s(),

@@ -18,6 +18,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -140,5 +141,10 @@ public class ExtractionUseCase {
         extractionInfo = extractionInfo.withStatus(ExtractionStatus.COMPLETE);
         extractionInfoGateway.save(extractionInfo);
         log.info("extraction {} completed", extractionInfo.id());
+    }
+
+    public List<ExtractionInfo> getExtractionsByUserId(String userId) {
+        log.info("query extractions of user {}", userId);
+        return extractionInfoGateway.getByUserId(userId);
     }
 }

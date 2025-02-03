@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/fiap/extractions")
 public class ExtractionHandler {
@@ -39,6 +41,14 @@ public class ExtractionHandler {
             @PathVariable("id") String id
     ) {
         var response = extractionUseCase.getExtractionInfo(userId, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ExtractionInfo>> getExtractionsByUserId(
+            @RequestHeader("x-user-id") String userId
+    ) {
+        var response = extractionUseCase.getExtractionsByUserId(userId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

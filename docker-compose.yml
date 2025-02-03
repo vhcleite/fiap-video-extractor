@@ -14,8 +14,10 @@ services:
       - HOSTNAME=localstack
       - SERVICES=s3,dynamodb,sqs
       - AWS_DEFAULT_REGION=us-east-1
-      - DATA_DIR=/var/lib/localstack  # Explicitly set the data directory
+      - LOCALSTACK_INIT_SCRIPTS=/docker-entrypoint-initaws.d/*
     volumes:
       - "./localstack/data:/var/lib/localstack"  # Persist data across container restarts
+      - "./localstack/init:/etc/localstack/init/ready.d"
+
 networks:
   fiap-network:

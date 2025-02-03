@@ -6,6 +6,9 @@
 docker-compose up -d
 ```
 
+A criação dos servições já está automatizada, mas caso não funcione seguem os comandos para sua criação manual após o
+container estar funcionando.
+
 ## criar bucket s3
 
 ```

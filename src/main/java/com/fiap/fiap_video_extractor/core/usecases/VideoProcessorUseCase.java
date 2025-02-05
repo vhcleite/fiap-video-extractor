@@ -1,40 +1,78 @@
 package com.fiap.fiap_video_extractor.core.usecases;
 
-import net.bramp.ffmpeg.FFmpeg;
-import net.bramp.ffmpeg.FFmpegExecutor;
-import net.bramp.ffmpeg.FFprobe;
-import net.bramp.ffmpeg.builder.FFmpegBuilder;
-import net.bramp.ffmpeg.probe.FFmpegProbeResult;
+import com.fiap.fiap_video_extractor.adapters.gateways.ExtractionCommandGateway;
+import com.fiap.fiap_video_extractor.adapters.gateways.VideoProcessorGateway;
+import com.fiap.fiap_video_extractor.core.entities.ExtractionInfo;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
+import java.nio.file.StandardCopyOption;
+import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import static java.lang.String.format;
 
 @Service
 public class VideoProcessorUseCase {
 
-    private static final String FFMPEG_PATH = "ffmpeg"; // Ensure FFmpeg is installed and in PATH
-    private static final String FFPROBE_PATH = "ffprobe"; // Ensure FFprobe is installed and in PATH
+    private final ExtractionCommandGateway extractionCommandGateway;
+    private final VideoProcessorGateway videoProcessorGateway;
 
-    public void extractFrames(Path outputFolder, File videoFile, Long interval) throws IOException {
-        FFprobe ffprobe = new FFprobe(FFPROBE_PATH);
-        FFmpegProbeResult probeResult = ffprobe.probe(videoFile.getAbsolutePath());
-        Duration duration = Duration.ofSeconds(Double.valueOf(probeResult.getFormat().duration).longValue());
+    public VideoProcessorUseCase(
+            ExtractionCommandGateway extractionCommandGateway,
+            VideoProcessorGateway videoProcessorGateway) {
+        this.extractionCommandGateway = extractionCommandGateway;
+        this.videoProcessorGateway = videoProcessorGateway;
+    }
 
-        FFmpeg ffmpeg = new FFmpeg(FFMPEG_PATH);
-        for (long currentTime = 0; currentTime < duration.getSeconds(); currentTime += interval) {
-            String outputPath = outputFolder.resolve("frame_at_" + currentTime + ".jpg").toString();
-            FFmpegBuilder builder = new FFmpegBuilder()
-                    .setInput(videoFile.getAbsolutePath())
-                    .overrideOutputFiles(true)
-                    .addOutput(outputPath)
-                    .setFrames(1)
-                    .setStartOffset(currentTime, TimeUnit.SECONDS)
-                    .done();
-            new FFmpegExecutor(ffmpeg).createJob(builder).run();
+    public void asyncProcessVideo(ExtractionInfo extractionInfo) {
+        extractionCommandGateway.sendExtractionCommand(extractionInfo);
+    }
+
+    public Path process(String extractionId, InputStream videoInputStream) throws IOException {
+        String framesFolderName = format("frames_%s", extractionId);
+        String videoTempFileName = format("video_%s", extractionId);
+
+        Path outputFolder = Files.createTempDirectory(framesFolderName);
+        File videoFile = Files.createTempFile(videoTempFileName, ".mp4").toFile();
+
+        try (videoInputStream) {
+            Files.copy(videoInputStream, videoFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            long intervalInSeconds = 20;
+            videoProcessorGateway.extractFrames(outputFolder, videoFile, intervalInSeconds);
+
+            // Compress the frames into a ZIP file
+            Path zipFile = Files.createTempFile(framesFolderName, ".zip");
+            zipExtractedImages(zipFile, outputFolder);
+            return zipFile;
+        } finally {
+            deleteTemporaryFiles(videoFile, outputFolder);
+        }
+    }
+
+    private static void deleteTemporaryFiles(File videoFile, Path outputFolder) {
+        videoFile.delete();
+        for (File frameFile : outputFolder.toFile().listFiles()) {
+            frameFile.delete();
+        }
+        outputFolder.toFile().delete();
+    }
+
+    private static void zipExtractedImages(Path zipFile, Path outputFolder) throws IOException {
+        try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile.toFile()))) {
+            for (File frameFile : Objects.requireNonNull(outputFolder.toFile().listFiles())) {
+                ZipEntry entry = new ZipEntry(frameFile.getName());
+                zipOut.putNextEntry(entry);
+                Files.copy(frameFile.toPath(), zipOut);
+                zipOut.closeEntry();
+            }
         }
     }
 }

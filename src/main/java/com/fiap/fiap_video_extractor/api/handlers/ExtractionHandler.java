@@ -1,9 +1,9 @@
 package com.fiap.fiap_video_extractor.api.handlers;
 
+import com.fiap.fiap_video_extractor.adapters.controllers.ExtractionController;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionInfo;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionResult;
 import com.fiap.fiap_video_extractor.core.requests.ExtractionRequest;
-import com.fiap.fiap_video_extractor.core.usecases.ExtractionUseCase;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,20 +18,20 @@ import java.util.List;
 @RequestMapping(value = "/fiap/extractions")
 public class ExtractionHandler {
 
-    private final ExtractionUseCase extractionUseCase;
+    private final ExtractionController extractionController;
 
-    public ExtractionHandler(ExtractionUseCase extractionUseCase) {
-        this.extractionUseCase = extractionUseCase;
+    public ExtractionHandler(ExtractionController extractionController) {
+        this.extractionController = extractionController;
     }
 
     @PostMapping
-    public ResponseEntity<ExtractionInfo> getExtractionById(
+    public ResponseEntity<ExtractionInfo> createExtraction(
             @RequestHeader("x-user-id") String userId,
             @RequestParam("file") MultipartFile file,
             @RequestParam("email") String email
     ) {
         var request = new ExtractionRequest(userId, email);
-        var response = extractionUseCase.extractFile(request, file);
+        var response = extractionController.createExtraction(request, file);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -40,7 +40,7 @@ public class ExtractionHandler {
             @RequestHeader("x-user-id") String userId,
             @PathVariable("id") String id
     ) {
-        var response = extractionUseCase.getExtractionInfo(userId, id);
+        var response = extractionController.getExtractionInfo(userId, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -48,7 +48,7 @@ public class ExtractionHandler {
     public ResponseEntity<List<ExtractionInfo>> getExtractionsByUserId(
             @RequestHeader("x-user-id") String userId
     ) {
-        var response = extractionUseCase.getExtractionsByUserId(userId);
+        var response = extractionController.getExtractionsByUserId(userId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -57,7 +57,7 @@ public class ExtractionHandler {
             @RequestHeader("x-user-id") String userId,
             @PathVariable("id") String extractionId
     ) {
-        ExtractionResult result = extractionUseCase.getExtractionFile(userId, extractionId);
+        ExtractionResult result = extractionController.getExtractionFile(userId, extractionId);
 
         InputStreamResource resource = new InputStreamResource(result.inputStream());
 

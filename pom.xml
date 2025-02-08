@@ -82,7 +82,6 @@
             <version>1.26.0</version>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -93,6 +92,12 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
+                <configuration>
+                    <excludes>
+                        <!-- Add global exclusions here -->
+                        <exclude>**/com/fiap/fiap_video_extractor/external/**</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <!-- This execution prepares the JaCoCo agent before running tests -->
                     <execution>
@@ -121,9 +126,6 @@
                                 <rule>
                                     <!-- "BUNDLE" applies the rule to the entire codebase -->
                                     <element>BUNDLE</element>
-                                    <excludes>
-                                        <!--                                        <exclude>com.fiap.fiap_video_extractor.external.*</exclude>-->
-                                    </excludes>
                                     <limits>
                                         <limit>
                                             <counter>INSTRUCTION</counter>
@@ -138,6 +140,6 @@
                 </executions>
             </plugin>
         </plugins>
+        <finalName>app</finalName>
     </build>
-
 </project>

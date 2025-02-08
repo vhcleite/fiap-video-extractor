@@ -5,9 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class FiapVideoExtractorApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(FiapVideoExtractorApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(FiapVideoExtractorApplication.class, args);
+    }
 }

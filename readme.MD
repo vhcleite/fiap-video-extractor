@@ -63,14 +63,6 @@ abaixo:
 
 [Link Swagger](http://localhost:8080/swagger-ui/index.html)
 
-## Documento de arquitetura
-
-[Link do documento de arquitetura](https://docs.google.com/document/d/1nfmgcLGsvvb6R4hX-ZR9Nt6rrGdCiUL1hz-plsojUwE/edit?tab=t.0)
-
-## Outros repositórios
-
-[COLOCAR REPOSITÓRIOS DA INFRA]
-
 ## Fluxograma
 
 ```mermaid
@@ -94,5 +86,13 @@ participant EmailService
         API->>API: Extrai frame do vídeo
     end
     API->>S3: Salva imagens processadas em ZIP
-    API->>EmailService: Envia e-mail ao usuário com link para download
+    API->>EmailService: Envia e-mail ao usuário
 ```
+
+## Documento de arquitetura
+
+[Link do documento de arquitetura](https://docs.google.com/document/d/1nfmgcLGsvvb6R4hX-ZR9Nt6rrGdCiUL1hz-plsojUwE/edit?tab=t.0)
+
+## Outros repositórios
+
+[COLOCAR REPOSITÓRIOS DA INFRA]

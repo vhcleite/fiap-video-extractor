@@ -73,6 +73,7 @@ abaixo:
 
 ## Fluxograma
 
+```mermaid
 sequenceDiagram
 participant Cliente
 participant API
@@ -94,4 +95,4 @@ participant EmailService
     end
     API->>S3: Salva imagens processadas em ZIP
     API->>EmailService: Envia e-mail ao usuário com link para download
-
+```

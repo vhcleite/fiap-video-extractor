@@ -71,3 +71,27 @@ abaixo:
 
 [COLOCAR REPOSITÓRIOS DA INFRA]
 
+## Fluxograma
+
+sequenceDiagram
+participant Cliente
+participant API
+participant S3
+participant DynamoDB
+participant SQS
+participant Consumer
+participant EmailService
+
+    Cliente->>API: Envia vídeo (HTTP)
+    API->>S3: Salva vídeo no bucket S3
+    API->>DynamoDB: Armazena metadados do vídeo
+    API->>SQS: Envia comando de processamento
+
+    Consumer->>SQS: Consome mensagem de processamento
+    Consumer->>API: Inicia processamento do vídeo
+    loop A cada 20s
+        API->>API: Extrai frame do vídeo
+    end
+    API->>S3: Salva imagens processadas em ZIP
+    API->>EmailService: Envia e-mail ao usuário com link para download
+

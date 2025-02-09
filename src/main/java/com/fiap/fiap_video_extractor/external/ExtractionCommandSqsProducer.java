@@ -22,7 +22,8 @@ public class ExtractionCommandSqsProducer implements ExtractionCommandProducer {
 
     public ExtractionCommandSqsProducer(
             ObjectMapper mapper,
-            @Value("${events.queues.extraction-info}") String queueName, SqsTemplate sqsTemplate
+            @Value("${config.aws.sqs.extraction-info-command}") String queueName,
+            SqsTemplate sqsTemplate
     ) {
         this.mapper = mapper;
         this.queueName = queueName;

@@ -21,7 +21,7 @@ public class ExtractionProcessorListener {
         this.processor = processor;
     }
 
-    @SqsListener("${events.queues.extraction-info}")
+    @SqsListener("${config.aws.sqs.extraction-info-command}")
     public void receiveStringMessage(ExtractionCommand extractionCommand) {
         try {
             var extraction = processor.executeExtraction(extractionCommand);

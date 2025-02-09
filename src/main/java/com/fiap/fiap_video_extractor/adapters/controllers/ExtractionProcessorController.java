@@ -50,8 +50,6 @@ public class ExtractionProcessorController {
             log.error("error on extraction {}: {}", extractionInfo.id(), e.getMessage(), e);
             return extractionUseCase.updateStatus(extractionInfo.userId(), extractionInfo.id(), ExtractionStatus.ERROR);
         }
-        var updatedExtraction = extractionUseCase.updateStatus(extractionInfo.userId(), extractionInfo.id(), ExtractionStatus.COMPLETE);
-        log.info("extraction {} completed", extractionInfo.id());
-        return updatedExtraction;
+        return extractionUseCase.updateStatus(extractionInfo.userId(), extractionInfo.id(), ExtractionStatus.COMPLETE);
     }
 }

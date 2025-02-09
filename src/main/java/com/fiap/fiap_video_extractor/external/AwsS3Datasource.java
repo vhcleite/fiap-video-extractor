@@ -3,6 +3,7 @@ package com.fiap.fiap_video_extractor.external;
 import com.fiap.fiap_video_extractor.pkg.interfaces.FileStorageDatasource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -16,7 +17,8 @@ public class AwsS3Datasource implements FileStorageDatasource {
 
     Logger logger = LoggerFactory.getLogger(AwsS3Datasource.class);
 
-    private final String BUCKET_NAME = "images-extractions";
+    @Value("${config.aws.s3-buckets.file-storage}")
+    private String bucketName;
 
     private final S3Client s3Client;
 
@@ -26,7 +28,7 @@ public class AwsS3Datasource implements FileStorageDatasource {
 
     public void uploadFile(String objectKey, Path file) {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(BUCKET_NAME)
+                .bucket(bucketName)
                 .key(objectKey)
                 .build();
 
@@ -37,7 +39,7 @@ public class AwsS3Datasource implements FileStorageDatasource {
     @Override
     public InputStream getFile(String objectKey) {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(BUCKET_NAME)
+                .bucket(bucketName)
                 .key(objectKey)
                 .build();
 

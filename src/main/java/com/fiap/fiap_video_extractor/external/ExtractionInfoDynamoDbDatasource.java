@@ -4,6 +4,7 @@ import com.fiap.fiap_video_extractor.core.entities.ExtractionInfo;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionInfoFile;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionStatus;
 import com.fiap.fiap_video_extractor.pkg.interfaces.ExtractionInfoDatasource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
@@ -17,7 +18,9 @@ import java.util.Map;
 @Component
 public class ExtractionInfoDynamoDbDatasource implements ExtractionInfoDatasource {
 
-    public static final String EXTRACTION_INFO = "extraction_info";
+    @Value("${config.aws.dynamodb.extraction-info}")
+    private String tableName;
+
     private final DynamoDbClient dynamoDbClient;
 
     public ExtractionInfoDynamoDbDatasource(DynamoDbClient dynamoDbClient) {
@@ -39,7 +42,7 @@ public class ExtractionInfoDynamoDbDatasource implements ExtractionInfoDatasourc
         item.put("original_file_hash", AttributeValue.builder().s(info.originalFile().hash()).build());
 
         PutItemRequest request = PutItemRequest.builder()
-                .tableName(EXTRACTION_INFO)
+                .tableName(tableName)
                 .item(item)
                 .build();
 
@@ -55,7 +58,7 @@ public class ExtractionInfoDynamoDbDatasource implements ExtractionInfoDatasourc
         );
 
         GetItemRequest request = GetItemRequest.builder()
-                .tableName(EXTRACTION_INFO)
+                .tableName(tableName)
                 .key(key)
                 .build();
 
@@ -92,7 +95,7 @@ public class ExtractionInfoDynamoDbDatasource implements ExtractionInfoDatasourc
 
         // Use a QueryRequest instead of ScanRequest
         QueryRequest queryRequest = QueryRequest.builder()
-                .tableName(EXTRACTION_INFO)
+                .tableName(tableName)
                 .keyConditionExpression("user_id = :userId")
                 .expressionAttributeValues(expressionAttributeValues)
                 .build();

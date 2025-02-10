@@ -98,6 +98,11 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.3.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>2.9.3</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -113,6 +118,7 @@
                     <excludes>
                         <!-- Add global exclusions here -->
                         <exclude>**/com/fiap/fiap_video_extractor/external/**</exclude>
+                        <exclude>**/com/fiap/fiap_video_extractor/config/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

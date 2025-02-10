@@ -5,7 +5,9 @@ import com.fiap.fiap_video_extractor.core.entities.ExtractionInfo;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionInfoFile;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionStatus;
 import com.fiap.fiap_video_extractor.core.exceptions.ExtractionAlreadyBeingProcessedException;
+import com.fiap.fiap_video_extractor.core.exceptions.InvalidFileExtensionException;
 import com.fiap.fiap_video_extractor.core.requests.ExtractionRequest;
+import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,13 +27,17 @@ public class ExtractionUseCase {
     private static final Logger log = LoggerFactory.getLogger(ExtractionUseCase.class);
 
     private final ExtractionInfoGateway extractionInfoGateway;
+    private final Tika tika;
 
-    public ExtractionUseCase(ExtractionInfoGateway extractionInfoGateway) {
+    public ExtractionUseCase(ExtractionInfoGateway extractionInfoGateway, Tika tika) {
         this.extractionInfoGateway = extractionInfoGateway;
+        this.tika = tika;
     }
 
     public ExtractionInfo createExtraction(ExtractionRequest request, MultipartFile file) {
         try {
+            validateFileExtension(file);
+
             UUID id = UUID.randomUUID();
             String objectKey = String.format("%s/uploads/%s", id, file.getOriginalFilename());
             String extractedFilePath = String.format("%s/download/%s.zip", id, id);
@@ -41,6 +47,13 @@ public class ExtractionUseCase {
             return this.extractionInfoGateway.save(extractionInfo);
         } catch (IOException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void validateFileExtension(MultipartFile file) throws IOException {
+        String detectedType = tika.detect(file.getInputStream());
+        if (!List.of("video/mp4", "video/x-m4v", "video/quicktime").contains(detectedType)) {
+            throw new InvalidFileExtensionException(String.format("file type %s not allowed", detectedType));
         }
     }
 

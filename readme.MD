@@ -65,6 +65,8 @@ abaixo:
 
 ## Driagrama de sequência
 
+### Envio de vídeo para extração
+
 ```mermaid
 sequenceDiagram
 participant Cliente
@@ -72,21 +74,40 @@ participant API
 participant S3
 participant DynamoDB
 participant SQS
-participant Consumer
-participant EmailService
 
     Cliente->>API: Envia vídeo (HTTP)
     API->>S3: Salva vídeo no bucket S3
+    S3-->>API: Vídeo salvo
     API->>DynamoDB: Armazena metadados do vídeo
+    DynamoDB-->>API: Dados salvos
     API->>SQS: Envia comando de processamento
+    SQS-->>API: Mensagem enviada
+    API-->>Cliente: Pedido recebido
+```
 
-    Consumer->>SQS: Consome mensagem de processamento
-    Consumer->>API: Inicia processamento do vídeo
+### Extração de vídeo
+
+```mermaid
+sequenceDiagram
+participant API
+participant SQS
+participant DynamoDB
+participant S3
+participant Cliente
+
+    API->>SQS: Consome nova mensagem de processamento
+    SQS-->>API: Comando de processamento
+    API->>DynamoDB: Consulta dados da extração
+    DynamoDB-->>API: Dados da extração
+    API->>S3: Busca vídeo
+    S3-->>API: Vídeo
     loop A cada 20s
         API->>API: Extrai frame do vídeo
     end
     API->>S3: Salva imagens processadas em ZIP
-    API->>EmailService: Envia e-mail ao usuário
+    S3-->>API: Arquivo salvo
+    API->>Cliente: Envia e-mail ao usuário
+    API-->>SQS: Envia Ack para fila
 ```
 
 ## Documento de arquitetura

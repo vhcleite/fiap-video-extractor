@@ -63,6 +63,32 @@ abaixo:
 
 [Link Swagger](http://localhost:8080/swagger-ui/index.html)
 
+## Driagrama de sequência
+
+```mermaid
+sequenceDiagram
+participant Cliente
+participant API
+participant S3
+participant DynamoDB
+participant SQS
+participant Consumer
+participant EmailService
+
+    Cliente->>API: Envia vídeo (HTTP)
+    API->>S3: Salva vídeo no bucket S3
+    API->>DynamoDB: Armazena metadados do vídeo
+    API->>SQS: Envia comando de processamento
+
+    Consumer->>SQS: Consome mensagem de processamento
+    Consumer->>API: Inicia processamento do vídeo
+    loop A cada 20s
+        API->>API: Extrai frame do vídeo
+    end
+    API->>S3: Salva imagens processadas em ZIP
+    API->>EmailService: Envia e-mail ao usuário
+```
+
 ## Documento de arquitetura
 
 [Link do documento de arquitetura](https://docs.google.com/document/d/1nfmgcLGsvvb6R4hX-ZR9Nt6rrGdCiUL1hz-plsojUwE/edit?tab=t.0)
@@ -70,4 +96,3 @@ abaixo:
 ## Outros repositórios
 
 [COLOCAR REPOSITÓRIOS DA INFRA]
-

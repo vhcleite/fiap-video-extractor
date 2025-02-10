@@ -1,0 +1,25 @@
+spring:
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  application:
+    name: fiap-video-extractor
+  profiles:
+    active: ${ENVIRONMENT:local}
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 300MB
+      max-request-size: 300MB
+
+config:
+  aws:
+    s3-buckets:
+      file-storage: fiap-file-update
+    dynamodb:
+      extraction-info: fiap-table
+    sqs:
+      extraction-info-command: my-fiap
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+    address: http://127.0.0.1:4566
+    region: ${AWS_REGION}

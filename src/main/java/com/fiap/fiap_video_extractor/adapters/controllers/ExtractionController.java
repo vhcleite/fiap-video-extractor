@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -44,7 +45,9 @@ public class ExtractionController {
     }
 
     public List<ExtractionInfo> getExtractionsByUserId(String userId) {
-        return extractionUseCase.getExtractionsByUserId(userId);
+        var extractions = extractionUseCase.getExtractionsByUserId(userId);
+        extractions.sort(Comparator.comparing(ExtractionInfo::uploadAt).reversed());
+        return extractions;
     }
 
     public ExtractionResult getExtractionFile(String userId, String extractionId) {

@@ -27,9 +27,11 @@ public class ExtractionUseCase {
     private static final Logger log = LoggerFactory.getLogger(ExtractionUseCase.class);
 
     private final ExtractionInfoGateway extractionInfoGateway;
+    private final Tika tika;
 
-    public ExtractionUseCase(ExtractionInfoGateway extractionInfoGateway) {
+    public ExtractionUseCase(ExtractionInfoGateway extractionInfoGateway, Tika tika) {
         this.extractionInfoGateway = extractionInfoGateway;
+        this.tika = tika;
     }
 
     public ExtractionInfo createExtraction(ExtractionRequest request, MultipartFile file) {
@@ -49,7 +51,6 @@ public class ExtractionUseCase {
     }
 
     private void validateFileExtension(MultipartFile file) throws IOException {
-        Tika tika = new Tika();
         String detectedType = tika.detect(file.getInputStream());
         if (!List.of("video/mp4", "video/x-m4v", "video/quicktime").contains(detectedType)) {
             throw new InvalidFileExtensionException(String.format("file type %s not allowed", detectedType));

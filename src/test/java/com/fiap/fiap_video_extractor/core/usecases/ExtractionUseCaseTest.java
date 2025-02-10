@@ -5,7 +5,9 @@ import com.fiap.fiap_video_extractor.core.entities.ExtractionInfo;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionInfoFile;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionStatus;
 import com.fiap.fiap_video_extractor.core.exceptions.ExtractionAlreadyBeingProcessedException;
+import com.fiap.fiap_video_extractor.core.exceptions.InvalidFileExtensionException;
 import com.fiap.fiap_video_extractor.core.requests.ExtractionRequest;
+import org.apache.tika.Tika;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.OffsetDateTime;
@@ -29,9 +32,12 @@ public class ExtractionUseCaseTest {
     @Mock
     private ExtractionInfoGateway extractionInfoGateway;
 
+    @Mock
+    private Tika tika;
+
     @InjectMocks
     private ExtractionUseCase extractionUseCase;
-    
+
     @Test
     public void testCreateExtraction() throws Exception {
         // Arrange
@@ -46,6 +52,7 @@ public class ExtractionUseCaseTest {
         byte[] hashBytes = digest.digest(fileBytes);
         String expectedHash = java.util.HexFormat.of().formatHex(hashBytes);
 
+        when(tika.detect(any(InputStream.class))).thenReturn("video/mp4");
         when(extractionInfoGateway.save(any(ExtractionInfo.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
@@ -60,6 +67,30 @@ public class ExtractionUseCaseTest {
         assertEquals(expectedHash, result.originalFile().hash());
 
         verify(extractionInfoGateway, times(1)).save(any());
+    }
+
+    @Test
+    public void testCreateExtractionErrorByFileType() throws Exception {
+        // Arrange
+        ExtractionRequest request = new ExtractionRequest("user", "email@email.com");
+
+        String fileContent = "Test file content";
+        byte[] fileBytes = fileContent.getBytes(StandardCharsets.UTF_8);
+        String originalFilename = "test.mp4";
+        MultipartFile multipartFile = new MockMultipartFile("file", originalFilename, "video/mp4", fileBytes);
+
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hashBytes = digest.digest(fileBytes);
+        String expectedHash = java.util.HexFormat.of().formatHex(hashBytes);
+
+        when(tika.detect(any(InputStream.class))).thenReturn("plain/text");
+
+        // Act
+        assertThrows(InvalidFileExtensionException.class, () ->
+                extractionUseCase.createExtraction(request, multipartFile));
+
+
+        verify(extractionInfoGateway, never()).save(any());
     }
 
     @Test

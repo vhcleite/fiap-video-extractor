@@ -118,6 +118,7 @@
                     <excludes>
                         <!-- Add global exclusions here -->
                         <exclude>**/com/fiap/fiap_video_extractor/external/**</exclude>
+                        <exclude>**/com/fiap/fiap_video_extractor/config/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

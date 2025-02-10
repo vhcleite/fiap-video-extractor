@@ -1,0 +1,16 @@
+events:
+  queues:
+    extraction-info: extraction-info-queue
+
+config:
+  aws:
+    s3-buckets:
+      file-storage: images-extractions
+    dynamodb:
+      extraction-info: extraction_info
+    sqs:
+      extraction-info-command: extraction-info-queue
+    access-key: localstack
+    secret-key: localstack
+    address: http://127.0.0.1:4566
+    region: us-east-1

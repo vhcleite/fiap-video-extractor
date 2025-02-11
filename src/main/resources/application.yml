@@ -19,6 +19,7 @@ config:
       extraction-info: fiap-table
     sqs:
       extraction-info-command: my-fiap
+      extraction-notification: queue-notification-extraction
     access-key: ${AWS_ACCESS_KEY}
     secret-key: ${AWS_SECRET_KEY}
     address: http://127.0.0.1:4566

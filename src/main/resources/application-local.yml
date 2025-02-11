@@ -8,6 +8,7 @@ config:
       file-storage: images-extractions
     dynamodb:
       extraction-info: extraction_info
+      extraction-notification: queue-notification-extraction
     sqs:
       extraction-info-command: extraction-info-queue
     access-key: localstack

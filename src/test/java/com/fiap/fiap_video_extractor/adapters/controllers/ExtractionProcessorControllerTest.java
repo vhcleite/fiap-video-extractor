@@ -5,10 +5,12 @@ import com.fiap.fiap_video_extractor.core.entities.ExtractionInfo;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionStatus;
 import com.fiap.fiap_video_extractor.core.usecases.ExtractionUseCase;
 import com.fiap.fiap_video_extractor.core.usecases.FileStorageUseCase;
+import com.fiap.fiap_video_extractor.core.usecases.NotificationUseCase;
 import com.fiap.fiap_video_extractor.core.usecases.VideoProcessorUseCase;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.io.ByteArrayInputStream;
@@ -33,6 +35,8 @@ class ExtractionProcessorControllerTest {
 
     @Mock
     private VideoProcessorUseCase videoProcessorUseCase;
+    @Mock
+    private NotificationUseCase notificationUseCase;
 
     @InjectMocks
     private ExtractionProcessorController extractionProcessorController;
@@ -54,6 +58,7 @@ class ExtractionProcessorControllerTest {
         when(videoProcessorUseCase.process("extract456", mockVideoStream)).thenReturn(mockZipFile);
         when(extractionUseCase.updateStatus("user123", "extract456", ExtractionStatus.COMPLETE))
                 .thenReturn(mockExtractionInfo);
+        Mockito.doNothing().when(notificationUseCase).notifyExtractionComplete(any());
 
         // Act
         ExtractionInfo result = extractionProcessorController.executeExtraction(extractionCommand);
@@ -82,7 +87,7 @@ class ExtractionProcessorControllerTest {
         when(fileStorageUseCase.getFile("path/to/video.mp4")).thenReturn(mockVideoStream);
         when(videoProcessorUseCase.process("extract456", mockVideoStream)).thenThrow(new RuntimeException("Processing error"));
         when(extractionUseCase.updateStatus("user123", "extract456", ExtractionStatus.ERROR)).thenReturn(mockExtractionInfo);
-
+        Mockito.doNothing().when(notificationUseCase).notifyExtractionError(any());
         // Act
         ExtractionInfo result = extractionProcessorController.executeExtraction(extractionCommand);
 

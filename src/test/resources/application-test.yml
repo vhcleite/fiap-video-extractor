@@ -10,6 +10,7 @@ config:
       extraction-info: extraction_info
     sqs:
       extraction-info-command: extraction-info-queue
+      extraction-notification: queue-notification-extraction
     access-key: localstack
     secret-key: localstack
     address: http://127.0.0.1:4566

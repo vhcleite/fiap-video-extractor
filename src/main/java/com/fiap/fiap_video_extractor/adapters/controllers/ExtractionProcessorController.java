@@ -5,6 +5,7 @@ import com.fiap.fiap_video_extractor.core.entities.ExtractionInfo;
 import com.fiap.fiap_video_extractor.core.entities.ExtractionStatus;
 import com.fiap.fiap_video_extractor.core.usecases.ExtractionUseCase;
 import com.fiap.fiap_video_extractor.core.usecases.FileStorageUseCase;
+import com.fiap.fiap_video_extractor.core.usecases.NotificationUseCase;
 import com.fiap.fiap_video_extractor.core.usecases.VideoProcessorUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +23,16 @@ public class ExtractionProcessorController {
     private final ExtractionUseCase extractionUseCase;
     private final FileStorageUseCase fileStorageUseCase;
     private final VideoProcessorUseCase videoProcessorUseCase;
+    private final NotificationUseCase notificationUseCase;
 
     public ExtractionProcessorController(
             ExtractionUseCase extractionUseCase,
             FileStorageUseCase fileStorageUseCase,
-            VideoProcessorUseCase videoProcessorUseCase) {
+            VideoProcessorUseCase videoProcessorUseCase, NotificationUseCase notificationUseCase) {
         this.extractionUseCase = extractionUseCase;
         this.fileStorageUseCase = fileStorageUseCase;
         this.videoProcessorUseCase = videoProcessorUseCase;
+        this.notificationUseCase = notificationUseCase;
     }
 
     public ExtractionInfo executeExtraction(ExtractionCommand extractionCommand) {
@@ -45,9 +48,10 @@ public class ExtractionProcessorController {
             } finally {
                 Files.delete(zipFile);
             }
-
+            notificationUseCase.notifyExtractionComplete(extractionInfo);
         } catch (Exception e) {
             log.error("error on extraction {}: {}", extractionInfo.id(), e.getMessage(), e);
+            notificationUseCase.notifyExtractionError(extractionInfo);
             return extractionUseCase.updateStatus(extractionInfo.userId(), extractionInfo.id(), ExtractionStatus.ERROR);
         }
         return extractionUseCase.updateStatus(extractionInfo.userId(), extractionInfo.id(), ExtractionStatus.COMPLETE);

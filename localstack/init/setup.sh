@@ -18,5 +18,6 @@ awslocal dynamodb create-table \
 
 # Create SQS queue
 awslocal sqs create-queue --queue-name extraction-info-queue
+awslocal sqs create-queue --queue-name queue-notification-extraction
 
 echo "Initialization complete!"

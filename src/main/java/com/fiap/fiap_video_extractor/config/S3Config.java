@@ -51,7 +51,7 @@ public class S3Config {
 
     @Bean
     @Profile("dev")
-    public S3Client dynamoDbClientDev() {
+    public S3Client s3DbClientDev() {
         return S3Client.builder()
                 .region(Region.of(region))
                 .build();

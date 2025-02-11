@@ -52,7 +52,7 @@ public class SqsConfig {
 
     @Bean
     @Profile("dev")
-    public SqsAsyncClient dynamoDbClientDev() {
+    public SqsAsyncClient sqsDbClientDev() {
         return SqsAsyncClient.builder()
                 .region(Region.of(region))
                 .build();

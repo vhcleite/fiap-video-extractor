@@ -19,7 +19,7 @@ config:
       extraction-info: fiap-table
     sqs:
       extraction-info-command: my-fiap
-    access-key: ${AWS_ACCESS_KEY}
-    secret-key: ${AWS_SECRET_KEY}
+    access-key: ${AWS_ACCESS_KEY:teste}
+    secret-key: ${AWS_SECRET_KEY:teste}
     address: http://127.0.0.1:4566
-    region: ${AWS_REGION}
+    region: ${AWS_REGION:us-east-1}

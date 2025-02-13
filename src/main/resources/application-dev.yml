@@ -1,0 +1,12 @@
+config:
+  aws:
+    s3-buckets:
+      file-storage: fiap-file-update
+    dynamodb:
+      extraction-info: fiap-table
+    sqs:
+      extraction-info-command: my-fiap
+    access-key: dummy
+    secret-key: dummy
+    address: http://127.0.0.1:4566
+    region: us-east-1

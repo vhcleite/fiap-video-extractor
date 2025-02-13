@@ -48,12 +48,4 @@ public class DynamoDbConfig {
                 .endpointOverride(URI.create(address))
                 .build();
     }
-
-    @Bean
-    @Profile("dev")
-    public DynamoDbClient dynamoDbClientDev() {
-        return DynamoDbClient.builder()
-                .region(Region.of(region))
-                .build();
-    }
 }

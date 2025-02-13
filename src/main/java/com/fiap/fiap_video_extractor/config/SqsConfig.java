@@ -51,14 +51,6 @@ public class SqsConfig {
     }
 
     @Bean
-    @Profile("dev")
-    public SqsAsyncClient sqsDbClientDev() {
-        return SqsAsyncClient.builder()
-                .region(Region.of(region))
-                .build();
-    }
-
-    @Bean
     public SqsTemplate sqsTemplate(SqsAsyncClient sqsAsyncClient) {
         return SqsTemplate.builder().sqsAsyncClient(sqsAsyncClient).build();
     }

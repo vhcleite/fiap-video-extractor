@@ -48,12 +48,4 @@ public class S3Config {
                 .endpointOverride(URI.create(address))
                 .build();
     }
-
-    @Bean
-    @Profile("dev")
-    public S3Client s3DbClientDev() {
-        return S3Client.builder()
-                .region(Region.of(region))
-                .build();
-    }
 }

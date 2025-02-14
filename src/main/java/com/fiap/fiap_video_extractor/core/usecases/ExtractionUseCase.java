@@ -96,6 +96,7 @@ public class ExtractionUseCase {
         return new ExtractionInfo(
                 id.toString(),
                 request.userId(),
+                request.email(),
                 ExtractionStatus.PENDING,
                 objectKey,
                 extractedFilePath,

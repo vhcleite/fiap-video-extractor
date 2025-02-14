@@ -8,9 +8,8 @@ import io.awspring.cloud.sqs.operations.SqsTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class NotificationSqsProducer implements NotificationProducer {
     Logger logger = LoggerFactory.getLogger(NotificationSqsProducer.class);
 

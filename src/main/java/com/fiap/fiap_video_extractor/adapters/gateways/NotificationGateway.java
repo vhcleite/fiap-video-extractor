@@ -15,14 +15,14 @@ public class NotificationGateway {
 
     public void notifyExtractionComplete(ExtractionInfo extractionInfo) {
         var request = new NotificationRequest(
-                extractionInfo.userId(), extractionInfo.id(), "create"
+                extractionInfo.userId(), extractionInfo.id(), "create", extractionInfo.email()
         );
         producer.notifyExtractionComplete(request);
     }
 
     public void notifyExtractionError(ExtractionInfo extractionInfo) {
         var request = new NotificationRequest(
-                extractionInfo.userId(), extractionInfo.id(), "error"
+                extractionInfo.userId(), extractionInfo.id(), "error", extractionInfo.email()
         );
         producer.notifyExtractionComplete(request);
     }

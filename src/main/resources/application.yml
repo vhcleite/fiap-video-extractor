@@ -10,6 +10,13 @@ spring:
       enabled: true
       max-file-size: 300MB
       max-request-size: 300MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username:
+    password:
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: true
 
 config:
   aws:

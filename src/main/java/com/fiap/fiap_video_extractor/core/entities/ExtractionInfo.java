@@ -5,6 +5,7 @@ import java.time.OffsetDateTime;
 public record ExtractionInfo(
         String id,
         String userId,
+        String email,
         ExtractionStatus status,
         String videoStoragePath,
         String extractedFilePath,
@@ -16,6 +17,7 @@ public record ExtractionInfo(
         return new ExtractionInfo(
                 id,
                 userId,
+                email,
                 newStatus,
                 videoStoragePath,
                 extractedFilePath,

@@ -32,6 +32,7 @@ public class ExtractionInfoDynamoDbDatasource implements ExtractionInfoDatasourc
         Map<String, AttributeValue> item = new HashMap<>();
         item.put("id", AttributeValue.builder().s(info.id()).build());
         item.put("user_id", AttributeValue.builder().s(info.userId()).build());
+        item.put("email", AttributeValue.builder().s(info.userId()).build());
         item.put("status", AttributeValue.builder().s(info.status().name()).build());
         item.put("video_storage_path", AttributeValue.builder().s(info.videoStoragePath()).build());
         item.put("extracted_file_path", AttributeValue.builder().s(info.extractedFilePath()).build());
@@ -73,6 +74,7 @@ public class ExtractionInfoDynamoDbDatasource implements ExtractionInfoDatasourc
         return new ExtractionInfo(
                 item.get("id").s(),
                 item.get("user_id").s(),
+                item.get("email").s(),
                 ExtractionStatus.valueOf(item.get("status").s()),
                 item.get("video_storage_path").s(),
                 item.get("extracted_file_path").s(),
@@ -128,6 +130,7 @@ public class ExtractionInfoDynamoDbDatasource implements ExtractionInfoDatasourc
         return new ExtractionInfo(
                 item.get("id").s(),
                 item.get("user_id").s(),
+                item.get("email").s(),
                 ExtractionStatus.valueOf(item.get("status").s()),
                 item.get("video_storage_path").s(),
                 item.get("extracted_file_path").s(),
